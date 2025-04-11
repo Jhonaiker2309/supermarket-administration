@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, IconButton, Box, Typography } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, IconButton } from '@mui/material';
 import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
 
 export default function ProductModal({ open, onClose, onSave, product }) {
@@ -7,22 +7,26 @@ export default function ProductModal({ open, onClose, onSave, product }) {
     name: '',
     brand: '',
     store: '',
-    price: '',
-    link: '',
-    images: [],
+    store_link: '',
+    images: '', // Ahora se usará como un único URL (string)
+    weight_prices: [], // Array de objetos { price, weight }
   });
 
   useEffect(() => {
     if (product) {
-      setFormData({ ...product });
+      setFormData({ 
+        ...product,
+        weight_prices: product.weight_prices || [],
+        images: product.images || '', // Se espera que este campo sea un string
+      });
     } else {
       setFormData({
         name: '',
         brand: '',
         store: '',
-        price: '',
-        link: '',
-        images: [],
+        store_link: '',
+        images: '',
+        weight_prices: [],
       });
     }
   }, [product, open]);
@@ -32,36 +36,30 @@ export default function ProductModal({ open, onClose, onSave, product }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e, index) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // reader.result tiene el formato "data:[mime];base64,...."
-        const base64Data = reader.result.split(',')[1]; // extrae sólo la cadena base64
-        const newImages = [...formData.images];
-        newImages[index] = { data: base64Data, mimeType: file.type };
-        setFormData((prev) => ({ ...prev, images: newImages }));
-      };
-      reader.readAsDataURL(file);
-    }
+  // Funciones para modificar el array de weight_prices
+  const handleWeightPricesChange = (index, field, value) => {
+    const newWeightPrices = [...formData.weight_prices];
+    newWeightPrices[index] = {
+      ...newWeightPrices[index],
+      [field]: field === 'weight' || field === 'price' ? (value === '' ? '' : Number(value)) : value,
+    };
+    setFormData((prev) => ({ ...prev, weight_prices: newWeightPrices }));
   };
 
-  const addImageField = () => {
-    setFormData((prev) => ({ ...prev, images: [...prev.images, null] }));
+  const addWeightPricesField = () => {
+    setFormData((prev) => ({ 
+      ...prev, 
+      weight_prices: [...prev.weight_prices, { price: '', weight: '' }] 
+    }));
   };
 
-  const removeImageField = (index) => {
-    const newImages = formData.images.filter((_, i) => i !== index);
-    setFormData((prev) => ({ ...prev, images: newImages }));
+  const removeWeightPricesField = (index) => {
+    const newWeightPrices = formData.weight_prices.filter((_, i) => i !== index);
+    setFormData((prev) => ({ ...prev, weight_prices: newWeightPrices }));
   };
 
   const handleSave = () => {
-    // Filtra las imágenes vacías o sin datos antes de enviarlas
-    const validImages = formData.images.filter(
-      (img) => img && img.data
-    );
-    onSave({ ...formData, images: validImages });
+    onSave(formData);
     onClose();
   };
 
@@ -73,22 +71,37 @@ export default function ProductModal({ open, onClose, onSave, product }) {
           <TextField label="Nombre" name="name" value={formData.name} onChange={handleChange} fullWidth />
           <TextField label="Marca" name="brand" value={formData.brand} onChange={handleChange} fullWidth />
           <TextField label="Tienda" name="store" value={formData.store} onChange={handleChange} fullWidth />
-          <TextField label="Precio" name="price" type="number" value={formData.price} onChange={handleChange} fullWidth />
-          <TextField label="Link" name="link" value={formData.link} onChange={handleChange} fullWidth />
-          <Typography variant="subtitle1">Imágenes</Typography>
-          {formData.images.map((img, index) => (
-            <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Button variant="outlined" component="label" fullWidth>
-                {img ? 'Imagen cargada' : `Seleccionar Imagen ${index + 1}`}
-                <input type="file" accept="image/*" hidden onChange={(e) => handleFileChange(e, index)} />
-              </Button>
-              <IconButton color="error" onClick={() => removeImageField(index)}>
+          <TextField label="Link de tienda" name="store_link" value={formData.link} onChange={handleChange} fullWidth />
+          <TextField
+            label="URL de la Imagen"
+            name="images"
+            value={formData.images}
+            onChange={handleChange}
+            fullWidth
+          />
+
+          <Typography variant="subtitle1">Peso y Precio</Typography>
+          {formData.weight_prices.map((item, index) => (
+            <Box key={index} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <TextField 
+                label="Peso (g)" 
+                type="number" 
+                value={item.weight} 
+                onChange={(e) => handleWeightPricesChange(index, 'weight', e.target.value)} 
+              />
+              <TextField 
+                label="Precio" 
+                type="number" 
+                value={item.price} 
+                onChange={(e) => handleWeightPricesChange(index, 'price', e.target.value)} 
+              />
+              <IconButton color="error" onClick={() => removeWeightPricesField(index)}>
                 <RemoveCircleOutline />
               </IconButton>
             </Box>
           ))}
-          <Button variant="outlined" startIcon={<AddCircleOutline />} onClick={addImageField}>
-            Agregar Imagen
+          <Button variant="outlined" startIcon={<AddCircleOutline />} onClick={addWeightPricesField}>
+            Agregar Peso y Precio
           </Button>
         </Box>
       </DialogContent>

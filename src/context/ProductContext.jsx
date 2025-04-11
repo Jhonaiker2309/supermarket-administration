@@ -27,7 +27,6 @@ export function ProductProvider({ children }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        // Se envía el objeto product que incluye el array "images"
         body: JSON.stringify(product),
       });
       if (!response.ok) {
@@ -50,7 +49,7 @@ export function ProductProvider({ children }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          // Se envía updatedProduct, que incluye el nuevo array de imágenes si corresponde
+          // Se envía updatedProduct, que incluye el nuevo array de imágenes y "weight_prices" si corresponde
           body: JSON.stringify(updatedProduct),
         }
       );
