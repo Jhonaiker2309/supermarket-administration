@@ -1,5 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
+// Obtén la URL base de la API desde la variable de entorno
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ProductContext = createContext();
 
 export function ProductProvider({ children }) {
@@ -8,7 +11,7 @@ export function ProductProvider({ children }) {
   // Función para cargar los productos desde el backend
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products'); // Llama al endpoint del backend
+      const response = await fetch(`${API_URL}/products`); // Llama al endpoint del backend
       if (!response.ok) {
         throw new Error('Error al cargar los productos');
       }
@@ -22,7 +25,7 @@ export function ProductProvider({ children }) {
   // Función para agregar un producto
   const addProduct = async (product) => {
     try {
-      const response = await fetch('/api/products', {
+      const response = await fetch(`${API_URL}/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +46,7 @@ export function ProductProvider({ children }) {
   const updateProduct = async (updatedProduct) => {
     try {
       const response = await fetch(
-        `/api/products/${updatedProduct.name}/${updatedProduct.brand}/${updatedProduct.store}`,
+        `${API_URL}/products/${updatedProduct.name}/${updatedProduct.brand}/${updatedProduct.store}`,
         {
           method: 'PUT',
           headers: {
@@ -75,7 +78,7 @@ export function ProductProvider({ children }) {
   const deleteProduct = async (productToDelete) => {
     try {
       const response = await fetch(
-        `/api/products/${productToDelete.name}/${productToDelete.brand}/${productToDelete.store}`,
+        `${API_URL}/products/${productToDelete.name}/${productToDelete.brand}/${productToDelete.store}`,
         {
           method: 'DELETE',
         }
