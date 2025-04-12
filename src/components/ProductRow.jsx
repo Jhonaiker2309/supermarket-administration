@@ -122,7 +122,7 @@ export default function ProductRow({ product, onDelete, price }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Visitar Tienda
+              Link de tienda
             </a>
           ) : (
             "N/A"
