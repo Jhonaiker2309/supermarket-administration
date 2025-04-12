@@ -94,6 +94,19 @@ export default function ProductRow({ product, onDelete, price }) {
             : "N/A"}
         </TableCell>
         <TableCell>
+          {product.date
+            ? new Date(product.date).toLocaleString("es-VE", {
+                timeZone: "America/Caracas",
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "N/A"}
+        </TableCell>
+        <TableCell>
           {product.images ? (
             <a href={product.images} target="_blank" rel="noopener noreferrer">
               Ver Imagenes

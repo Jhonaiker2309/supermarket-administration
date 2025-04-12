@@ -83,6 +83,7 @@ export default function ProductTable({ onAdd, price }) {
                 <TableCell><strong>Precio (Bs.)</strong></TableCell>
                 <TableCell><strong>Precio kilo ($)</strong></TableCell>
                 <TableCell><strong>Precio kilo (Bs.)</strong></TableCell>
+                <TableCell><strong>Fecha</strong></TableCell>                
                 <TableCell><strong>Imágenes</strong></TableCell>
                 <TableCell><strong>Visitar Tienda</strong></TableCell>
                 <TableCell><strong>Acciones</strong></TableCell>
