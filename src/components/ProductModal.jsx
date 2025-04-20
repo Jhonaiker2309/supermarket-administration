@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, IconButton } from '@mui/material';
+import { 
+  Dialog, DialogTitle, DialogContent, DialogActions, 
+  Button, TextField, Box, Typography, IconButton, useTheme, useMediaQuery 
+} from '@mui/material';
 import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
 
 export default function ProductModal({ open, onClose, onSave, product }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
   const [formData, setFormData] = useState({
     name: '',
     brand: '',
@@ -17,7 +23,7 @@ export default function ProductModal({ open, onClose, onSave, product }) {
       setFormData({ 
         ...product,
         weight_prices: product.weight_prices || [],
-        images: product.images || '', // Se espera que este campo sea un string
+        images: product.images || '',
       });
     } else {
       setFormData({
@@ -67,11 +73,43 @@ export default function ProductModal({ open, onClose, onSave, product }) {
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{product ? 'Editar Producto' : 'Agregar Producto'}</DialogTitle>
       <DialogContent>
-        <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField label="Nombre" name="name" value={formData.name} onChange={handleChange} fullWidth />
-          <TextField label="Marca" name="brand" value={formData.brand} onChange={handleChange} fullWidth />
-          <TextField label="Tienda" name="store" value={formData.store} onChange={handleChange} fullWidth />
-          <TextField label="Link de tienda" name="store_link" value={formData.link} onChange={handleChange} fullWidth />
+        <Box 
+          component="form" 
+          sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 2, 
+            mt: 1 
+          }}
+        >
+          <TextField 
+            label="Nombre" 
+            name="name" 
+            value={formData.name} 
+            onChange={handleChange} 
+            fullWidth 
+          />
+          <TextField 
+            label="Marca" 
+            name="brand" 
+            value={formData.brand} 
+            onChange={handleChange} 
+            fullWidth 
+          />
+          <TextField 
+            label="Tienda" 
+            name="store" 
+            value={formData.store} 
+            onChange={handleChange} 
+            fullWidth 
+          />
+          <TextField 
+            label="Link de tienda" 
+            name="store_link" 
+            value={formData.store_link} 
+            onChange={handleChange} 
+            fullWidth 
+          />
           <TextField
             label="URL de la Imagen"
             name="images"
@@ -82,32 +120,53 @@ export default function ProductModal({ open, onClose, onSave, product }) {
 
           <Typography variant="subtitle1">Peso y Precio</Typography>
           {formData.weight_prices.map((item, index) => (
-            <Box key={index} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Box 
+              key={index} 
+              sx={{ 
+                display: 'flex', 
+                flexDirection: isMobile ? 'column' : 'row',
+                gap: 1, 
+                alignItems: isMobile ? 'stretch' : 'center' 
+              }}
+            >
               <TextField 
                 label="Peso (g)" 
                 type="number" 
                 value={item.weight} 
                 onChange={(e) => handleWeightPricesChange(index, 'weight', e.target.value)} 
+                fullWidth={isMobile}
               />
               <TextField 
                 label="Precio" 
                 type="number" 
                 value={item.price} 
                 onChange={(e) => handleWeightPricesChange(index, 'price', e.target.value)} 
+                fullWidth={isMobile}
               />
-              <IconButton color="error" onClick={() => removeWeightPricesField(index)}>
+              <IconButton 
+                color="error" 
+                onClick={() => removeWeightPricesField(index)}
+                sx={{ alignSelf: isMobile ? 'flex-end' : 'center' }}
+              >
                 <RemoveCircleOutline />
               </IconButton>
             </Box>
           ))}
-          <Button variant="outlined" startIcon={<AddCircleOutline />} onClick={addWeightPricesField}>
+          <Button 
+            variant="outlined" 
+            startIcon={<AddCircleOutline />} 
+            onClick={addWeightPricesField}
+            fullWidth={isMobile}
+          >
             Agregar Peso y Precio
           </Button>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSave} variant="contained">
+      <DialogActions sx={{ flexDirection: isMobile ? 'column' : 'row', gap: 1, p: 2 }}>
+        <Button onClick={onClose} fullWidth={isMobile}>
+          Cancelar
+        </Button>
+        <Button onClick={handleSave} variant="contained" fullWidth={isMobile}>
           Guardar
         </Button>
       </DialogActions>

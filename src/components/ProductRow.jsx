@@ -6,6 +6,7 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Tooltip
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -13,7 +14,6 @@ import EditProductModal from "./EditProductModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 export default function ProductRow({ product, onDelete, price }) {
-  console.log(product);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
 
@@ -77,7 +77,7 @@ export default function ProductRow({ product, onDelete, price }) {
             "N/A"
           )}
         </TableCell>
-        <TableCell>
+        {/*<TableCell>
           {selectedWeight ? `$${priceUsd.toFixed(2)}` : "N/A"}
         </TableCell>
         <TableCell>
@@ -92,7 +92,7 @@ export default function ProductRow({ product, onDelete, price }) {
           {selectedWeight && selectedWeight.weight > 0
             ? `${priceKiloBs.toFixed(2)} Bs`
             : "N/A"}
-        </TableCell>
+        </TableCell>*/}
         <TableCell>
           {product.date
             ? new Date(product.date).toLocaleString("es-VE", {
@@ -129,12 +129,16 @@ export default function ProductRow({ product, onDelete, price }) {
           )}
         </TableCell>
         <TableCell>
-          <IconButton color="primary" onClick={handleEdit}>
-            <EditIcon />
-          </IconButton>
-          <IconButton color="error" onClick={handleDelete}>
-            <DeleteIcon />
-          </IconButton>
+          <Tooltip title="Editar producto" arrow>
+            <IconButton color="primary" onClick={handleEdit}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Eliminar producto" arrow>
+            <IconButton color="error" onClick={handleDelete}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
         </TableCell>
       </TableRow>
 

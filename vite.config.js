@@ -4,6 +4,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
-    plugins: [react()]
+    plugins: [react()],
+    server: {
+      hmr: true,
+      watch: {
+        usePolling: true,
+      },
+    },
   }
 })
