@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import ProductTable from "./components/ProductTable";
 import ProductModal from "./components/ProductModal";
 import { useProductContext } from "./context/ProductContext";
 
 export default function App() {
-  const { addProduct, updateProduct, deleteProduct } = useProductContext();
+  const { addProduct, updateProduct, deleteProduct, dolarOptions } =
+    useProductContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
   const [price, setPrice] = useState(0);
   const [savedDate, setSavedDate] = useState(null);
+  const [selectedDolar, setSelectedDolar] = useState("");
 
   // Cargar la tasa guardada y su fecha desde localStorage al iniciar
   useEffect(() => {
@@ -27,12 +38,32 @@ export default function App() {
   }, []);
 
   // Guarda la tasa y la fecha (en formato ISO) en localStorage
-  // Luego, al mostrarla, se utilizará toLocaleString con la zona horaria de Venezuela
   const handleSaveRate = () => {
     const now = new Date();
     const nowISOString = now.toISOString();
-    localStorage.setItem("exchangeRate", JSON.stringify({ price, date: nowISOString }));
+    localStorage.setItem(
+      "exchangeRate",
+      JSON.stringify({ price, date: nowISOString })
+    );
     setSavedDate(nowISOString);
+  };
+
+  // Manejar la selección de un valor del dólar
+  const handleSelectDolar = (e) => {
+    const id = e.target.value;
+    setSelectedDolar(id);
+    const selectedOption = dolarOptions.find((option) => option.id === id);
+    if (selectedOption) {
+      setPrice(selectedOption.value);
+      setSavedDate(selectedOption.date);
+      localStorage.setItem(
+        "exchangeRate",
+        JSON.stringify({
+          price: selectedOption.value,
+          date: selectedOption.date,
+        })
+      );
+    }
   };
 
   const handleAdd = () => {
@@ -72,6 +103,20 @@ export default function App() {
           gap: 2,
         }}
       >
+        <FormControl fullWidth>
+          <InputLabel>Valores Dólar</InputLabel>
+          <Select value={selectedDolar} onChange={handleSelectDolar}>
+            {dolarOptions?.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {`$${
+                  isNaN(option.value) ? "N/A" : option.value.toFixed(2)
+                } — ${new Date(option.date).toLocaleString("es-VE", {
+                  timeZone: "America/Caracas",
+                })}`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <TextField
           label="Tasa de cambio"
           type="number"
@@ -91,7 +136,9 @@ export default function App() {
       {savedDate && (
         <Typography variant="caption" align="center" display="block">
           Tasa guardada:{" "}
-          {new Date(savedDate).toLocaleString("es-VE", { timeZone: "America/Caracas" })}
+          {new Date(savedDate).toLocaleString("es-VE", {
+            timeZone: "America/Caracas",
+          })}
         </Typography>
       )}
       <ProductTable

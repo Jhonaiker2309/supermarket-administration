@@ -67,7 +67,7 @@ export default function ProductTable({ onAdd, price }) {
       <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
         {/* Filtros y botón (ubicados arriba) */}
         <Grid container spacing={2}>
-          <Grid size={{ xs: 12 }}>
+          <Grid item xs={12}>
             <Button
               fullWidth
               variant="contained"
@@ -98,7 +98,7 @@ export default function ProductTable({ onAdd, price }) {
               label: "Filtrar por Tienda",
             },
           ].map((filter, index) => (
-            <Grid size={{ xs: 12, md: 4 }} key={index}>
+            <Grid item xs={12} md={4} key={index}>
               <TextField
                 fullWidth
                 size="small"

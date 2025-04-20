@@ -6,7 +6,7 @@ import {
   FormControl,
   Select,
   MenuItem,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -77,22 +77,26 @@ export default function ProductRow({ product, onDelete, price }) {
             "N/A"
           )}
         </TableCell>
-        {/*<TableCell>
-          {selectedWeight ? `$${priceUsd.toFixed(2)}` : "N/A"}
-        </TableCell>
         <TableCell>
-          {selectedWeight ? `${priceBs.toFixed(2)} Bs` : "N/A"}
-        </TableCell>
-        <TableCell>
-          {selectedWeight && selectedWeight.weight > 0
-            ? `$${priceKiloUsd.toFixed(2)}`
+          {selectedWeight && !isNaN(priceUsd)
+            ? `$${priceUsd}`
             : "N/A"}
         </TableCell>
         <TableCell>
-          {selectedWeight && selectedWeight.weight > 0
-            ? `${priceKiloBs.toFixed(2)} Bs`
+          {selectedWeight && !isNaN(priceBs)
+            ? `${priceBs} Bs`
             : "N/A"}
-        </TableCell>*/}
+        </TableCell>
+        <TableCell>
+          {selectedWeight && selectedWeight.weight > 0 && !isNaN(priceKiloUsd)
+            ? `$${priceKiloUsd}`
+            : "N/A"}
+        </TableCell>
+        <TableCell>
+          {selectedWeight && selectedWeight.weight > 0 && !isNaN(priceKiloBs)
+            ? `${priceKiloBs} Bs`
+            : "N/A"}
+        </TableCell>
         <TableCell>
           {product.date
             ? new Date(product.date).toLocaleString("es-VE", {
@@ -109,7 +113,7 @@ export default function ProductRow({ product, onDelete, price }) {
         <TableCell>
           {product.images ? (
             <a href={product.images} target="_blank" rel="noopener noreferrer">
-              Ver Imagenes
+              Ver Imágenes
             </a>
           ) : (
             "N/A"
