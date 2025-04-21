@@ -147,7 +147,9 @@ export default function App() {
         sx={{
           my: 2,
           display: "flex",
-          flexDirection: "column",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "center",
+          alignItems: "center",
           gap: 2,
           flexWrap: "wrap",
         }}
@@ -216,7 +218,7 @@ export default function App() {
               </Box>
             </Box>
           )}
-          sx={{ minWidth: 350, width: "100%" }}
+          sx={{ width: { xs: "100%", sm: "400px" } }}
           disabled={!dolarOptions || dolarOptions.length === 0}
         />
 
@@ -226,12 +228,12 @@ export default function App() {
           value={price}
           onChange={handlePriceChange}
           inputProps={{ step: 0.1 }}
-          sx={{ width: "100%" }}
+          sx={{ width: { xs: "100%", sm: "200px" } }}
         />
         <Button
           variant="contained"
           onClick={handleAddDolar}
-          sx={{ width: "100%", height: "56px" }}
+          sx={{ width: { xs: "100%", sm: "200px" }, height: "56px" }}
         >
           Agregar Nueva Tasa
         </Button>
