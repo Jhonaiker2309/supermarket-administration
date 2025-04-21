@@ -19,10 +19,10 @@ import ProductRow from "./ProductRow";
 import ProductCard from "./ProductCard";
 import { useProductContext } from "../context/ProductContext";
 
-export default function ProductTable({ onAdd, price }) {
+export default function ProductTable({ onAdd, onEdit, onDelete, price }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { products, deleteProduct } = useProductContext();
+  const { products } = useProductContext();  // only need products here
 
   // Estados para filtros
   const [filterName, setFilterName] = useState("");
@@ -32,10 +32,6 @@ export default function ProductTable({ onAdd, price }) {
   // Estados para paginación
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleDelete = (product) => {
-    deleteProduct(product);
-  };
 
   // Filtrar los productos
   const filteredProducts = products.filter(
@@ -49,7 +45,6 @@ export default function ProductTable({ onAdd, price }) {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
-
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -63,42 +58,25 @@ export default function ProductTable({ onAdd, price }) {
 
   return (
     <Box sx={{ height: "80vh", display: "flex", flexDirection: "column" }}>
-      {/* Contenido scrollable (filtros, botón y tabla) */}
       <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
-        {/* Filtros y botón (ubicados arriba) */}
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item size={12}>
             <Button
               fullWidth
               variant="contained"
               onClick={onAdd}
-              sx={{
-                height: "56px", // Cambia la altura del botón
-              }}
+              sx={{ height: "44px" }}
             >
               Agregar Producto
             </Button>
           </Grid>
 
-          {/* Campos de filtrado */}
-          {[
-            {
-              value: filterName,
-              setter: setFilterName,
-              label: "Filtrar por Nombre",
-            },
-            {
-              value: filterBrand,
-              setter: setFilterBrand,
-              label: "Filtrar por Marca",
-            },
-            {
-              value: filterStore,
-              setter: setFilterStore,
-              label: "Filtrar por Tienda",
-            },
-          ].map((filter, index) => (
-            <Grid item xs={12} md={4} key={index}>
+          {[ 
+            { value: filterName, setter: setFilterName, label: "Filtrar por Nombre" },
+            { value: filterBrand, setter: setFilterBrand, label: "Filtrar por Marca" },
+            { value: filterStore, setter: setFilterStore, label: "Filtrar por Tienda" },
+          ].map((filter, idx) => (
+            <Grid item size={{ xs: 12, md: 4 }} key={idx}>
               <TextField
                 fullWidth
                 size="small"
@@ -109,68 +87,45 @@ export default function ProductTable({ onAdd, price }) {
             </Grid>
           ))}
         </Grid>
+
         {isMobile ? (
-          // Vista móvil con Cards
           <Box sx={{ mt: 2 }}>
-            {paginatedProducts.map((product, index) => (
+            {paginatedProducts.map((product, idx) => (
               <ProductCard
-                key={index}
+                key={idx}
                 product={product}
-                onDelete={handleDelete}
+                onDelete={onDelete}
+                onEdit={onEdit}
                 price={price}
               />
             ))}
           </Box>
         ) : (
-          // Vista desktop con Tabla
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>
-                    <strong>Nombre</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Marca</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Tienda</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Peso</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Precio ($)</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Precio (Bs.)</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Precio kilo ($)</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Precio kilo (Bs.)</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Fecha</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Imágenes</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Visitar Tienda</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Acciones</strong>
-                  </TableCell>
+                  <TableCell><strong>Nombre</strong></TableCell>
+                  <TableCell><strong>Marca</strong></TableCell>
+                  <TableCell><strong>Tienda</strong></TableCell>
+                  <TableCell><strong>Peso</strong></TableCell>
+                  <TableCell><strong>Precio ($)</strong></TableCell>
+                  <TableCell><strong>Precio (Bs.)</strong></TableCell>
+                  <TableCell><strong>Precio kilo ($)</strong></TableCell>
+                  <TableCell><strong>Precio kilo (Bs.)</strong></TableCell>
+                  <TableCell><strong>Fecha</strong></TableCell>
+                  <TableCell><strong>Imágenes</strong></TableCell>
+                  <TableCell><strong>Visitar Tienda</strong></TableCell>
+                  <TableCell><strong>Acciones</strong></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedProducts.map((product, index) => (
+                {paginatedProducts.map((product, idx) => (
                   <ProductRow
-                    key={index}
+                    key={idx}
                     product={product}
-                    onDelete={handleDelete}
+                    onDelete={onDelete}
+                    onEdit={onEdit}
                     price={price}
                   />
                 ))}
@@ -180,7 +135,6 @@ export default function ProductTable({ onAdd, price }) {
         )}
       </Box>
 
-      {/* Área fija inferior: solo paginación */}
       <Box sx={{ borderTop: "1px solid #ddd", backgroundColor: "white" }}>
         <TablePagination
           component="div"

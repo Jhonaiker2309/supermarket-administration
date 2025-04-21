@@ -13,43 +13,44 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditProductModal from "./EditProductModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-export default function ProductRow({ product, onDelete, price }) {
+export default function ProductRow({ product, onDelete, onEdit, price }) {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
 
-  // Opciones para weight_prices: se espera un array de objetos { price: number, weight: number }
+  // peso/precio options
   const weightOptions = product.weight_prices || [];
-  // Estado para la opción seleccionada; se inicializa con 0 (la primera opción) si existe
   const [selectedWeightIndex, setSelectedWeightIndex] = useState(
     weightOptions.length > 0 ? 0 : null
   );
-
-  const handleEdit = () => setOpenEditModal(true);
-  const handleCloseEditModal = () => setOpenEditModal(false);
-
-  const handleDelete = () => setOpenDeleteConfirm(true);
-  const handleCloseDeleteConfirm = () => setOpenDeleteConfirm(false);
-
-  const handleWeightChange = (event) => {
-    setSelectedWeightIndex(event.target.value);
-  };
-
-  // Obtiene la opción seleccionada para mostrar su precio y peso
+  const handleWeightChange = (e) => setSelectedWeightIndex(e.target.value);
   const selectedWeight =
-    weightOptions.length && selectedWeightIndex !== null
-      ? weightOptions[selectedWeightIndex]
-      : null;
+    selectedWeightIndex !== null ? weightOptions[selectedWeightIndex] : null;
 
-  // Cálculos:
-  // Precio en dólares y Bs. según el peso seleccionado
+  // cálculos
   const priceUsd = selectedWeight ? selectedWeight.price : null;
-  const priceBs = selectedWeight ? selectedWeight.price * price : null;
-  // Precio por kilo: se supone que weight está en gramos
+  const priceBs = priceUsd != null ? priceUsd * price : null;
   const priceKiloUsd =
     selectedWeight && selectedWeight.weight > 0
       ? (selectedWeight.price / selectedWeight.weight) * 1000
       : null;
-  const priceKiloBs = priceKiloUsd ? priceKiloUsd * price : null;
+  const priceKiloBs = priceKiloUsd != null ? priceKiloUsd * price : null;
+
+  const formatDate = (d) =>
+    new Date(d).toLocaleString("es-VE", {
+      timeZone: "America/Caracas",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+  // handlers for modals
+  const handleEditOpen = () => setOpenEditModal(true);
+  const handleEditClose = () => setOpenEditModal(false);
+  const handleDeleteOpen = () => setOpenDeleteConfirm(true);
+  const handleDeleteClose = () => setOpenDeleteConfirm(false);
 
   return (
     <>
@@ -59,16 +60,14 @@ export default function ProductRow({ product, onDelete, price }) {
         <TableCell>{product.store}</TableCell>
         <TableCell>
           {weightOptions.length > 0 ? (
-            <FormControl fullWidth variant="outlined" size="small">
+            <FormControl fullWidth size="small">
               <Select
-                labelId={`weight-select-label-${product.name}`}
-                id={`weight-select-${product.name}`}
                 value={selectedWeightIndex}
                 onChange={handleWeightChange}
               >
-                {weightOptions.map((option, index) => (
-                  <MenuItem key={index} value={index}>
-                    {option.weight} g
+                {weightOptions.map((opt, i) => (
+                  <MenuItem key={i} value={i}>
+                    {opt.weight} g
                   </MenuItem>
                 ))}
               </Select>
@@ -78,37 +77,19 @@ export default function ProductRow({ product, onDelete, price }) {
           )}
         </TableCell>
         <TableCell>
-          {selectedWeight && !isNaN(priceUsd)
-            ? `$${priceUsd}`
-            : "N/A"}
+          {priceUsd != null ? `$${priceUsd}` : "N/A"}
         </TableCell>
         <TableCell>
-          {selectedWeight && !isNaN(priceBs)
-            ? `${priceBs} Bs`
-            : "N/A"}
+          {priceBs != null ? `${priceBs} Bs` : "N/A"}
         </TableCell>
         <TableCell>
-          {selectedWeight && selectedWeight.weight > 0 && !isNaN(priceKiloUsd)
-            ? `$${priceKiloUsd}`
-            : "N/A"}
+          {priceKiloUsd != null ? `$${priceKiloUsd}` : "N/A"}
         </TableCell>
         <TableCell>
-          {selectedWeight && selectedWeight.weight > 0 && !isNaN(priceKiloBs)
-            ? `${priceKiloBs} Bs`
-            : "N/A"}
+          {priceKiloBs != null ? `${priceKiloBs} Bs` : "N/A"}
         </TableCell>
         <TableCell>
-          {product.date
-            ? new Date(product.date).toLocaleString("es-VE", {
-                timeZone: "America/Caracas",
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "N/A"}
+          {product.date ? formatDate(product.date) : "N/A"}
         </TableCell>
         <TableCell>
           {product.images ? (
@@ -134,12 +115,12 @@ export default function ProductRow({ product, onDelete, price }) {
         </TableCell>
         <TableCell>
           <Tooltip title="Editar producto" arrow>
-            <IconButton color="primary" onClick={handleEdit}>
+            <IconButton color="primary" onClick={handleEditOpen}>
               <EditIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Eliminar producto" arrow>
-            <IconButton color="error" onClick={handleDelete}>
+            <IconButton color="error" onClick={handleDeleteOpen}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
@@ -148,13 +129,21 @@ export default function ProductRow({ product, onDelete, price }) {
 
       <EditProductModal
         open={openEditModal}
-        onClose={handleCloseEditModal}
+        onClose={handleEditClose}
         product={product}
+        onSave={(updated) => {
+          onEdit(updated);
+          handleEditClose();
+        }}
       />
 
       <ConfirmDeleteModal
         open={openDeleteConfirm}
-        onClose={handleCloseDeleteConfirm}
+        onClose={handleDeleteClose}
+        onConfirm={() => {
+          onDelete(product);
+          handleDeleteClose();
+        }}
         product={product}
       />
     </>
