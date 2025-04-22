@@ -14,6 +14,7 @@ import {
 import { Delete, Edit, Link as LinkIcon } from "@mui/icons-material";
 import EditProductModal from "./EditProductModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { getDecimals } from "../utils";
 
 export default function ProductCard({ product, onDelete, onEdit, price }) {
   const theme = useTheme();
@@ -33,36 +34,39 @@ export default function ProductCard({ product, onDelete, onEdit, price }) {
   );
   const handleWeightChange = (e) => setSelectedWeightIndex(e.target.value);
 
-  const selected = 
+  const selected =
     selectedWeightIndex !== null ? weightOptions[selectedWeightIndex] : null;
 
   // cálculos
-  const priceUsd    = selected ? selected.price : null;
-  const priceBs     = priceUsd != null ? priceUsd * price : null;
-  const priceKiloUsd= selected && selected.weight > 0
-    ? (selected.price / selected.weight) * 1000
-    : null;
+  const priceUsd = selected ? selected.price : null;
+  const priceBs = priceUsd != null ? priceUsd * price : null;
+  const priceKiloUsd =
+    selected && selected.weight > 0
+      ? (selected.price / selected.weight) * 1000
+      : null;
   const priceKiloBs = priceKiloUsd != null ? priceKiloUsd * price : null;
 
   // fecha formateada
   const formatDate = (d) =>
     new Date(d).toLocaleString("es-VE", {
       timeZone: "America/Caracas",
-      day:   "2-digit",
+      day: "2-digit",
       month: "2-digit",
-      year:  "numeric",
-      hour:  "numeric",
-      minute:"2-digit",
-      hour12:true
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
 
   return (
     <>
       <Paper
         sx={{
-          mb: 2, p: 2,
+          mb: 2,
+          p: 2,
           backgroundColor: theme.palette.background.paper,
-          borderRadius: 2, boxShadow: 3,
+          borderRadius: 2,
+          boxShadow: 3,
         }}
       >
         <Grid container spacing={2}>
@@ -83,7 +87,7 @@ export default function ProductCard({ product, onDelete, onEdit, price }) {
                   value={selectedWeightIndex}
                   onChange={handleWeightChange}
                   displayEmpty
-                  renderValue={v =>
+                  renderValue={(v) =>
                     v !== null ? `${weightOptions[v].weight} g` : "Seleccionar"
                   }
                 >
@@ -102,28 +106,28 @@ export default function ProductCard({ product, onDelete, onEdit, price }) {
           <Grid item xs={6}>
             <Typography variant="body2">Precio ($):</Typography>
             <Typography>
-              {priceUsd != null ? `$${priceUsd}` : "N/A"}
+              {priceUsd != null ? `$${getDecimals(priceUsd)}` : "N/A"}
             </Typography>
           </Grid>
 
           <Grid item xs={6}>
             <Typography variant="body2">Precio (Bs):</Typography>
             <Typography>
-              {priceBs != null ? `${priceBs} Bs` : "N/A"}
+              {priceBs != null ? `${getDecimals(priceBs)} Bs` : "N/A"}
             </Typography>
           </Grid>
 
           <Grid item xs={6}>
             <Typography variant="body2">Precio kilo ($):</Typography>
             <Typography>
-              {priceKiloUsd != null ? `$${priceKiloUsd}` : "N/A"}
+              {priceKiloUsd != null ? `$${getDecimals(priceKiloUsd)}` : "N/A"}
             </Typography>
           </Grid>
 
           <Grid item xs={6}>
             <Typography variant="body2">Precio kilo (Bs):</Typography>
             <Typography>
-              {priceKiloBs != null ? `${priceKiloBs} Bs` : "N/A"}
+              {priceKiloBs != null ? `${getDecimals(priceKiloBs)} Bs` : "N/A"}
             </Typography>
           </Grid>
 
@@ -134,7 +138,11 @@ export default function ProductCard({ product, onDelete, onEdit, price }) {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Grid
+            item
+            xs={12}
+            sx={{ display: "flex", justifyContent: "space-between" }}
+          >
             <Tooltip title="Ver imágenes" arrow>
               <IconButton
                 color="primary"

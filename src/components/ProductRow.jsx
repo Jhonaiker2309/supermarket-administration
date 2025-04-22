@@ -12,6 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditProductModal from "./EditProductModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { getDecimals } from "../utils";
 
 export default function ProductRow({ product, onDelete, onEdit, price }) {
   const [openEditModal, setOpenEditModal] = useState(false);
@@ -77,16 +78,16 @@ export default function ProductRow({ product, onDelete, onEdit, price }) {
           )}
         </TableCell>
         <TableCell>
-          {priceUsd != null ? `$${priceUsd}` : "N/A"}
+          {priceUsd != null ? `$${getDecimals(priceUsd)}` : "N/A"}
         </TableCell>
         <TableCell>
-          {priceBs != null ? `${priceBs} Bs` : "N/A"}
+          {priceBs != null ? `${getDecimals(priceBs)} Bs` : "N/A"}
         </TableCell>
         <TableCell>
-          {priceKiloUsd != null ? `$${priceKiloUsd}` : "N/A"}
+          {priceKiloUsd != null ? `$${getDecimals(priceKiloUsd)}` : "N/A"}
         </TableCell>
         <TableCell>
-          {priceKiloBs != null ? `${priceKiloBs} Bs` : "N/A"}
+          {priceKiloBs != null ? `${getDecimals(priceKiloBs)} Bs` : "N/A"}
         </TableCell>
         <TableCell>
           {product.date ? formatDate(product.date) : "N/A"}
